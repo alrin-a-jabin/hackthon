@@ -1,6 +1,6 @@
-import { UserModel } from "../models/Users";
-import generateToken from "../utils/generateToken";
+import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
+import { UserModel } from "../models/Users.js";
 
 export const authUser = async (req, res) => {
   try {
@@ -11,15 +11,17 @@ export const authUser = async (req, res) => {
       return res.status(400).json({
         status: false,
         statusCode: 400,
-        message: 'User does not exist',
+        message: "User does not exist",
       });
     }
+    console.log(password, user.password);
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log(isMatch);
     if (!isMatch) {
       return res.status(400).json({
         status: false,
         statusCode: 400,
-        message: 'Password is incorrect'
+        message: "Password is incorrect",
       });
     }
 

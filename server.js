@@ -1,9 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { mongodbUrl, port } from "./constant.js";
+import { mongodbUrl } from "./constant.js";
 import userRoutersApi from "./routes/userRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import 'dotenv/config'
+export const port = process.env.PORT;
 
 const app = express();
 

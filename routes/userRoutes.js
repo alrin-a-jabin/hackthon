@@ -4,24 +4,33 @@ import { UserModel } from "../models/Users.js";
 import generateToken from "../utils/generateToken.js";
 import { tokenVerification } from "../middleware/verifyToken.js";
 import bcrypt from "bcryptjs";
+import  {authUser} from "../controller/userController.js";
 
 // Creating a new router instance
 const router = express.Router();
-
-
+router.post("/login", authUser);
 
 // Creating a new user
 router.post("/createUser", async (req, res) => {
   try {
+
     // Extracting name, email and age from request body
     const { name, email, age, password } = req.body;
 
     // Checking if all the required fields are provided
-    if (!name || !email  || !password) {
+    if (!name || !email || !password) {
       return res.status(400).send({
         status: false,
         statusCode: 400,
         message: "Please provide all the required fields",
+      });
+    }
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).send({
+        status: false,
+        statusCode: 400,
+        message: "Email already in use",
       });
     }
 
@@ -174,22 +183,6 @@ router.delete("/deleteUser/:id", tokenVerification, async (req, res) => {
   }
 });
 
-const authUser = async (req, res) => {
-  try {
-    const user = await UserModel.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    const token = generateToken(user._id);
-
-    res.status(200).json({ user: user, token: token });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-router.post("/login", authUser);
 
 // Exporting the router instance
 export default router;
